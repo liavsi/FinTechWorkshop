@@ -7,7 +7,7 @@ import logging
 import logging.config
 import yaml
 
-def setup_logging(default_path='C:\שנה ג סמ א\workshop\FinTechWorkshop\parser\logs\logging_config.yaml',
+def setup_logging(default_path='FinTechWorkshop\logs\logging_config.yaml',
                     default_level=logging.INFO):
     """Setup logging configuration"""
     if os.path.exists(default_path):
@@ -40,31 +40,21 @@ def combine_DataTables(path):
 
     # Write the combined data to a new CSV file
     combined_data.to_csv(output_file_path, index=False)
-    logging.info(f'Combined data written to {output_file_path}')
+    logger.info(f'Combined data written to {output_file_path}')
 
 def download_files_and_create_DataTables():
-    logging.info('Downloading files and creating data tables')
-    # import AWS credentials
-    AWS_Credentials = pd.read_csv('AWS_Credentials.csv')
+    logger.info('Downloading files and creating data tables')
 
-    # Creating Session to the AWS S3 storage
-    session = boto3.Session(
-        aws_access_key_id=AWS_Credentials['aws_access_key_id'][0],
-        aws_secret_access_key=AWS_Credentials['aws_secret_access_key'][0],
-        region_name='eu-west-3'
-    )
-    s3 = session.client('s3')
-    bucket_name = 'tase-rmbo-files'
-    folder_name = 'rmbo files/rezef/'
-    response = s3.list_objects_v2(Bucket=bucket_name, Prefix=folder_name)  # Creating list of files from the folder
-    local_directory_path = r'C:\temp'
+
+    
+    local_directory_path = 'FinTechWorkshop\files'
     output_directory_path = local_directory_path + '\\' + 'Data Tables'
-
+    logger.info()
     # Check if the folder exists
     if not os.path.exists(output_directory_path):
         # Create the folder
         os.makedirs(output_directory_path)
-        logging.info(f'Created output directory: {output_directory_path}')
+        logger.info(f'Created output directory: {output_directory_path}')
 
     # Iterating over the list of object in the storage
     for obj in response['Contents']:
@@ -106,7 +96,7 @@ def get_folder():
     file_list = os.listdir(folder_path)
 
     for file_name in file_list:
-        if file_name.endswith(".rmbo"):
+        if file_name.endswith(".rmbo.gz"):
             local_file_path = os.path.join(folder_path, file_name)
             logging.info(f'Decompressing file: {local_file_path}')
             decompress_GZ_file(local_file_path)
@@ -125,9 +115,9 @@ def decompress_GZ_file(local_file_path):
     with open(extracted_file_path, 'wb') as file:
         file.write(decompressed_data)
 
-    # Remove the GZ file after extraction
-    os.remove(local_file_path)
-    logging.info(f'Removed {local_file_path}')
+    # Remove the GZ file after extraction - NOT NEEDED YET
+    # os.remove(local_file_path)
+    # logging.info(f'Removed {local_file_path}')
     return extracted_file_path
 
 try:
@@ -140,5 +130,5 @@ except Exception as e:
 if __name__ == '__main__':
     logger.info('Starting the application')
     get_folder()
-    #directory_path = download_files_and_create_DataTables()
-    #combine_DataTables(directory_path)
+    directory_path = download_files_and_create_DataTables()
+    combine_DataTables(directory_path)

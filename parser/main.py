@@ -211,11 +211,11 @@ def check_sql():
 
 
 if __name__ == '__main__':
-    folder_path = 'C:\workshop\extracted'
-    #get_folder(folder_path)
-    #convert_folder(folder_path)
+    folder_path = 'C:\temp'
+    get_folder(folder_path)
+    convert_folder(folder_path)
     #create_sql_script(folder_path, 'transactions.sql')
     #create_sql_from_csvs(folder_path)
-    check_sql()
-    #directory_path = download_files_and_create_DataTables()
-    #combine_DataTables(directory_path)
+    #check_sql()
+    directory_path = download_files_and_create_DataTables()
+    combine_DataTables(directory_path)
